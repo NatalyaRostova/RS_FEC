@@ -4,6 +4,11 @@
 #include <mutex>
 #include <vector>
 
+#define LOG_PRINT_DIV_TABLE 0
+#define LOG_PRINT_MULTI_TABLE 0
+#define LOG_PRINT_EXP_TABLE 0
+#define LOG_PRINT_LOG_TABLE 0
+
 namespace rs_fec_poca {
     class gf2_8 {
     public:
