@@ -1,5 +1,6 @@
 #include "galois_field.h"
 
+#include <iostream>
 #include <mutex>
 
 std::once_flag init_once_flag;
@@ -52,6 +53,14 @@ void init_galois_field_1() {
             div_table[i][j] = exp_table[(log_table[i] - log_table[j] + size - 1) % (size - 1)];
         }
     }
+#if 1
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            std::cout << div_table[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+#endif
 }
 
 void rs_fec_poca::gf2_8::init_galois_field() { std::call_once(init_once_flag, init_galois_field_1); }

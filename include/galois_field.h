@@ -11,7 +11,6 @@ namespace rs_fec_poca {
         gf2_8();
         gf2_8(uint8_t val);
         ~gf2_8();
-
     private:
         uint8_t val_;
     };
