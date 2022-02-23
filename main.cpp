@@ -1,6 +1,6 @@
-#include "galois_field.h"
+#include "rs_fec_encode.h"
 
-int main(){
-    rs_fec_poca::gf2_8::init_galois_field();
+int main(int argc, char **argv) {
+    rs_fec_poca::rs_fec_encode(nullptr, nullptr, nullptr, nullptr, 5, 5);
     return 0;
 }

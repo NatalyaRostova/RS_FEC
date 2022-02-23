@@ -10,15 +10,16 @@
 #define LOG_PRINT_LOG_TABLE 0
 
 namespace rs_fec_poca {
-    class gf2_8 {
-    public:
-        static void init_galois_field();
-        gf2_8();
-        gf2_8(uint8_t val);
-        ~gf2_8();
-    private:
-        uint8_t val_;
-    };
+    typedef uint8_t gf2_8;
+
+    void init_galois_field();
+
+    gf2_8 gf_2_8_add(gf2_8 num1, gf2_8 num2);
+    gf2_8 gf_2_8_sub(gf2_8 num1, gf2_8 num2);
+    gf2_8 gf_2_8_multi(gf2_8 num1, gf2_8 num2);
+    gf2_8 gf_2_8_div(gf2_8 num1, gf2_8 num2);
+
+    gf2_8 gf_2_8_power(gf2_8 num, uint32_t exp);
 
 }  // namespace rs_fec_poca
 
