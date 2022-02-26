@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(RS_FEC)
+project(rs_fec_demo)
 set(RS_FEC_LIB_NAME poca_rs_fec)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -14,9 +14,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src RS_FEC_SRC)
 
 add_library(${RS_FEC_LIB_NAME} SHARED ${RS_FEC_SRC})
-add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp)
 target_link_libraries(${PROJECT_NAME} ${RS_FEC_LIB_NAME})
-
-# add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${RS_FEC_SRC})
 
 add_executable(calculator ${CMAKE_CURRENT_SOURCE_DIR}/calculator.cpp ${RS_FEC_SRC})

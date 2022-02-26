@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
     int o, a, b;
     using namespace poca;
     init_galois_field();
-    std::cout << "0: +\n1: \n2: x\n3: /" << std::endl;
+    std::cout << "0: +\n1: -\n2: x\n3: /" << std::endl;
     while (std::cin >> o >> a >> b) {
         switch (o) {
             case 0:

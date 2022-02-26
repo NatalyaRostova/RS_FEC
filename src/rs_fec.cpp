@@ -74,17 +74,13 @@ namespace poca {
             if (src[i].size() != n) return {};
         std::vector<std::vector<gf2_8>> ret(n, std::vector<gf2_8>(n, 0));
         for (int i = 0; i < n; ++i) ret[i][i] = 1;
-        auto swap = [&](int i, int j) {
+        auto add_line = [&](int i, int j) {
             gf2_8 tmp;
             for (int k = 0; k < n; ++k) {
-                tmp = src[i][k];
-                src[i][k] = src[j][k];
-                src[j][k] = tmp;
+                src[i][k] = gf_2_8_add(src[i][k], src[j][k]);
             }
             for (int k = 0; k < n; ++k) {
-                tmp = ret[i][k];
-                ret[i][k] = ret[j][k];
-                ret[j][k] = tmp;
+                ret[i][k] = gf_2_8_add(ret[i][k], ret[j][k]);
             }
         };
         auto find_vec = [&](int i) -> int {
@@ -95,7 +91,7 @@ namespace poca {
         for (int i = 0; i < n; ++i) {
             int st = find_vec(i);
             if (st == -1) return {};
-            if (st != i) swap(i, st);
+            if (st != i) add_line(i, st);
             gf2_8 div = gf_2_8_div(src[i][i], 1);
             for (int r = 0; r < n; ++r) {
                 src[i][r] = gf_2_8_div(src[i][r], div);
@@ -117,7 +113,9 @@ namespace poca {
             for (int j = i - 1; j >= 0; --j) {
                 gf2_8 mul = gf_2_8_div(src[j][i], src[i][i]);
                 src[j][i] = gf_2_8_sub(src[j][i], gf_2_8_multi(src[i][i], mul));
-                ret[j][i] = gf_2_8_sub(ret[j][i], gf_2_8_multi(ret[i][i], mul));
+                for (int k = 0; k < n; ++k) {
+                    ret[j][k] = gf_2_8_sub(ret[j][k], gf_2_8_multi(ret[i][k], mul));
+                }
             }
         }
 
@@ -137,14 +135,6 @@ namespace poca {
         for (int i = 0; i < n; ++i) {
             src.push_back(base_matrix[indexes[i]]);
         }
-        auto ret = find_inverse_matrix(src);
-        std::cout << "Src matrix: " << std::endl;
-        print_matrix(src);
-        std::cout << "Inverse matrix: " << std::endl;
-        print_matrix(ret);
-        std::cout << "Matrix multi: " << std::endl;
-        std::vector<std::vector<gf2_8>> mat = matrix_multi(src, ret);
-        print_matrix(mat);
         return find_inverse_matrix(src);
     }
 
