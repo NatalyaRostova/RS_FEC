@@ -14,7 +14,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src RS_FEC_SRC)
 
 add_library(${RS_FEC_LIB_NAME} SHARED ${RS_FEC_SRC})
-
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-
 target_link_libraries(${PROJECT_NAME} ${RS_FEC_LIB_NAME})
+
+# add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${RS_FEC_SRC})
+
+add_executable(calculator ${CMAKE_CURRENT_SOURCE_DIR}/calculator.cpp ${RS_FEC_SRC})

@@ -9,7 +9,7 @@
 #define LOG_PRINT_EXP_TABLE 0
 #define LOG_PRINT_LOG_TABLE 0
 
-namespace rs_fec_poca {
+namespace poca {
     typedef uint8_t gf2_8;
 
     void init_galois_field();
@@ -21,6 +21,6 @@ namespace rs_fec_poca {
 
     gf2_8 gf_2_8_power(gf2_8 num, uint32_t exp);
 
-}  // namespace rs_fec_poca
+}  // namespace poca
 
 #endif  // GALOIS_FIELD_H_443NIN798NUI39N

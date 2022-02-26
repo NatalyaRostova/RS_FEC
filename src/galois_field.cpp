@@ -8,7 +8,7 @@
 #define F_SIZE 0x100
 #define F_MAX 0xFF
 
-namespace rs_fec_poca {
+namespace poca {
 
     int16_t **multi_table;
     int16_t **div_table;
@@ -49,13 +49,16 @@ namespace rs_fec_poca {
             multi_table[i][i] = exp_table[(log_table[i] << 1) % F_MAX];
             multi_table[i][0] = multi_table[0][i] = 0;
         }
-
-        for (int i = 0; i < F_SIZE; ++i) {
+        for (int j = 1; j < F_SIZE; ++j) {
+            div_table[0][j] = 0;
+        }
+        for (int i = 1; i < F_SIZE; ++i) {
             for (int j = 1; j < F_SIZE; ++j) {
                 div_table[i][j] = exp_table[(F_MAX + log_table[i] - log_table[j]) % F_MAX];
             }
         }
 #if LOG_PRINT_DIV_TABLE
+        std::cout << "Div table: " << std::endl;
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
                 std::cout << div_table[i][j] << " ";
@@ -65,6 +68,7 @@ namespace rs_fec_poca {
 #endif
 
 #if LOG_PRINT_MULTI_TABLE
+        std::cout << "Multi table: " << std::endl;
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
                 std::cout << div_table[i][j] << " ";
@@ -74,6 +78,7 @@ namespace rs_fec_poca {
 #endif
 
 #if LOG_PRINT_EXP_TABLE
+        std::cout << "Exp table: " << std::endl;
         for (int i = 0; i < size; ++i) {
             std::cout << exp_table[i] << " ";
         }
@@ -81,6 +86,7 @@ namespace rs_fec_poca {
 #endif
 
 #if LOG_PRINT_LOG_TABLE
+        std::cout << "Log table: " << std::endl;
         for (int i = 0; i < size; ++i) {
             std::cout << log_table[i] << " ";
         }
@@ -107,4 +113,4 @@ namespace rs_fec_poca {
 
     gf2_8 gf_2_8_power(gf2_8 num, uint32_t exp) { return gf2_8(exp_table[(log_table[num] * exp) % F_MAX]); }
 
-}  // namespace rs_fec_poca
+}  // namespace poca
