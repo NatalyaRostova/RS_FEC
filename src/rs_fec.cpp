@@ -147,7 +147,7 @@ namespace poca {
         }
 
         auto recov_matirx = find_recov_matrix(n, m, indexes);
-        if (recov_matirx.size() == 0) return -1;
+        if (recov_matirx.size() != n) return -1;
 
         uint8_t **ret = new uint8_t *[n];
         *dst = ret;
