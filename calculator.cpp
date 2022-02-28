@@ -3,27 +3,36 @@
 #include "galois_field.h"
 
 int main(int argc, char **argv) {
-    int o, a, b;
+    int a, b;
+    char o;
     using namespace poca;
     init_galois_field();
-    std::cout << "0: +\n1: -\n2: x\n3: /" << std::endl;
-    while (std::cin >> o >> a >> b) {
+    std::cout << "Input q to exit\n";
+    std::cout << "Compute example: \n1 + 2\n1 - 2\n1 * 2\n1 / 2\n1 ^ 2\n";
+    std::cout << "Please make sure that the number you enter is between 0 and 255\n";
+    while (std::cin >> a >> o >> b) {
         switch (o) {
-            case 0:
+            case '+':
                 std::cout << int(gf_2_8_add(gf2_8(a), gf2_8(b))) << std::endl;
                 break;
-            case 1:
+            case '-':
                 std::cout << int(gf_2_8_sub(gf2_8(a), gf2_8(b))) << std::endl;
                 break;
-            case 2:
+            case '*':
                 std::cout << int(gf_2_8_multi(gf2_8(a), gf2_8(b))) << std::endl;
                 break;
-            case 3:
+            case '/':
                 std::cout << int(gf_2_8_div(gf2_8(a), gf2_8(b))) << std::endl;
                 break;
+            case '^':
+                std::cout << int(gf_2_8_power(gf2_8(a), gf2_8(b))) << std::endl;
+                break;
+            case 'q':
+                goto finish;
             default:
                 break;
         }
     }
+finish:
     return 0;
 }

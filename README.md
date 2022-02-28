@@ -7,7 +7,7 @@
 ./build.sh
 
 demo:
-./build/RS_FEC
+./build/rs_fec_demo
 
 有限域计算器:
 ./build/calculator
