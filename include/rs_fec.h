@@ -3,6 +3,7 @@
 #include "galois_field.h"
 
 #define LOG_PRINT_INVERSE_MATRIX 0
+#define USE_CAUCHY_MATRIX 1
 
 namespace poca {
     /**
@@ -25,7 +26,7 @@ namespace poca {
      * @param m 冗余数据包的个数
      * @return 0表示成功, < 0表示失败
      */
-    int rs_fec_recov(uint8_t ***dst, uint8_t **src, int size, int n, int m);
+    int rs_fec_decode(uint8_t ***dst, uint8_t **src, int size, int n, int m);
 }  // namespace poca
 
 #endif  // RS_FEC_H_32NIU3232N3NJ32

@@ -45,7 +45,13 @@ namespace poca {
             ret[i][i] = 1;
         }
         for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) ret[n + i][j] = gf_2_8_power(i + 1, j);
+            for (int j = 0; j < n; ++j) {
+#if USE_CAUCHY_MATRIX
+                ret[n + i][j] = gf_2_8_div(1, gf_2_8_add(i + 1, j + 128));
+#else
+                ret[n + i][j] = gf_2_8_power(i + 1, j);
+#endif
+            }
         }
         return ret;
     }
@@ -138,7 +144,7 @@ namespace poca {
         return find_inverse_matrix(src);
     }
 
-    int rs_fec_recov(uint8_t ***dst, uint8_t **src, int size, int n, int m) {
+    int rs_fec_decode(uint8_t ***dst, uint8_t **src, int size, int n, int m) {
         init_galois_field();
 
         std::vector<int> indexes;
