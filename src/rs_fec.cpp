@@ -21,11 +21,17 @@ namespace poca {
 
     std::vector<std::vector<gf2_8>> matrix_multi(std::vector<std::vector<gf2_8>> &a,
                                                  std::vector<std::vector<gf2_8>> &b) {
-        int n = a.size();
-        std::vector<std::vector<gf2_8>> ret(n, std::vector<gf2_8>(n, 0));
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                for (int k = 0; k < n; ++k) {
+        int na = a.size();
+        int nb = b.size();
+        if (na == 0 || nb == 0) return {};
+        int ma = a[0].size();
+        int mb = b[0].size();
+        if (ma != nb) return {};
+
+        std::vector<std::vector<gf2_8>> ret(na, std::vector<gf2_8>(mb, 0));
+        for (int i = 0; i < na; ++i) {
+            for (int j = 0; j < mb; ++j) {
+                for (int k = 0; k < ma; ++k) {
                     ret[i][j] = gf_2_8_add(ret[i][j], gf_2_8_multi(a[i][k], b[k][j]));
                 }
             }
@@ -44,10 +50,12 @@ namespace poca {
         for (int i = 0; i < n; ++i) {
             ret[i][i] = 1;
         }
+        int cauchy_x_base = 1;
+        int cauchy_y_base = 128;
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
 #if USE_CAUCHY_MATRIX
-                ret[n + i][j] = gf_2_8_div(1, gf_2_8_add(i + 1, j + 128));
+                ret[n + i][j] = gf_2_8_div(1, gf_2_8_add(i + cauchy_x_base, j + cauchy_y_base));
 #else
                 ret[n + i][j] = gf_2_8_power(i + 1, j);
 #endif
