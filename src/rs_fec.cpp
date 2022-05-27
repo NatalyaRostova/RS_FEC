@@ -8,9 +8,7 @@
 #include <vector>
 
 namespace poca {
-    std::map<std::pair<int, int>, std::vector<std::vector<gf2_8>>> n_m_to_base_matrix;
-    std::mutex base_matrix_mux;
-
+#define MAX_DATA_LENGTH 4096
     void print_matrix(std::vector<std::vector<gf2_8>> &m) {
         for (int i = 0; i < m.size(); ++i) {
             for (int j = 0; j < m[i].size(); ++j) std::cout << std::setw(3) << std::setfill(' ') << int(m[i][j]) << " ";
@@ -40,6 +38,9 @@ namespace poca {
     }
 
     std::vector<std::vector<gf2_8>> &init_base_matrix(int n, int m) {
+        static std::mutex base_matrix_mux;
+        static std::map<std::pair<int, int>, std::vector<std::vector<gf2_8>>> n_m_to_base_matrix;
+
         std::lock_guard<std::mutex> lock(base_matrix_mux);
         if (n_m_to_base_matrix.count(std::pair<int, int>(n, m))) {
             return n_m_to_base_matrix[std::pair<int, int>(n, m)];
@@ -50,11 +51,11 @@ namespace poca {
         for (int i = 0; i < n; ++i) {
             ret[i][i] = 1;
         }
-        int cauchy_x_base = 1;
-        int cauchy_y_base = 128;
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
 #if USE_CAUCHY_MATRIX
+                const int cauchy_x_base = 1;
+                const int cauchy_y_base = 128;
                 ret[n + i][j] = gf_2_8_div(1, gf_2_8_add(i + cauchy_x_base, j + cauchy_y_base));
 #else
                 ret[n + i][j] = gf_2_8_power(i + 1, j);
@@ -65,19 +66,35 @@ namespace poca {
     }
 
     int rs_fec_encode(uint8_t ***redundance, uint8_t **src, int size, int n, int m) {
-        init_galois_field();
         if (m > n) return -1;
+
+        init_galois_field();
         auto &matrix = init_base_matrix(n, m);
-        uint8_t **ret = new uint8_t *[m];
+
+        auto init_encode_buffer = [&]() {
+            static std::map<int, uint8_t **> m_to_encode_buffer;
+            static std::mutex encode_init_mux;
+            std::lock_guard<std::mutex> lock(encode_init_mux);
+            if (m_to_encode_buffer.count(m)) {
+                return m_to_encode_buffer[m];
+            }
+            m_to_encode_buffer[m] = new uint8_t *[m];
+            for (int i = 0; i < m; i++) {
+                m_to_encode_buffer[m][i] = new uint8_t[MAX_DATA_LENGTH];
+            }
+            return m_to_encode_buffer[m];
+        };
+
+        uint8_t **ret = init_encode_buffer();
         *redundance = ret;
         for (int i = 0; i < m; i++) {
-            ret[i] = new uint8_t[size];
             for (int j = 0; j < size; ++j) {
                 ret[i][j] = 0;
                 for (int k = 0; k < n; ++k) {
                     ret[i][j] = gf_2_8_add(ret[i][j], gf_2_8_multi(matrix[n + i][k], src[k][j]));
                 }
             }
+            ret[i][size] = 0;
         }
         return 0;
     }
@@ -154,7 +171,6 @@ namespace poca {
 
     int rs_fec_decode(uint8_t ***dst, uint8_t **src, int size, int n, int m) {
         init_galois_field();
-
         std::vector<int> indexes;
         for (int i = 0; i < n + m && indexes.size() < n; ++i) {
             if (src[i] != nullptr) indexes.push_back(i);
@@ -162,8 +178,20 @@ namespace poca {
 
         auto recov_matirx = find_recov_matrix(n, m, indexes);
         if (recov_matirx.size() != n) return -1;
-
-        uint8_t **ret = new uint8_t *[n];
+        auto init_decode_buffer = [&]() {
+            static std::map<int, uint8_t **> n_to_decode_buffer;
+            static std::mutex decode_init_mux;
+            std::lock_guard<std::mutex> lock(decode_init_mux);
+            if (n_to_decode_buffer.count(n)) {
+                return n_to_decode_buffer[n];
+            }
+            n_to_decode_buffer[n] = new uint8_t *[n];
+            for (int i = 0; i < n; i++) {
+                n_to_decode_buffer[n][i] = new uint8_t[MAX_DATA_LENGTH];
+            }
+            return n_to_decode_buffer[n];
+        };
+        uint8_t **ret = init_decode_buffer();
         *dst = ret;
 
         auto check_and_copy = [&](int i) {
@@ -181,7 +209,6 @@ namespace poca {
 
         for (int i = 0; i < n; ++i) {
             if (!check_and_copy(i)) {
-                ret[i] = new uint8_t[size];
                 for (int r = 0; r < size; ++r) {
                     ret[i][r] = 0;
                     for (int j = 0; j < n; ++j) {
@@ -189,6 +216,7 @@ namespace poca {
                     }
                 }
             }
+            ret[i][size] = 0;
         }
         return 0;
     }
